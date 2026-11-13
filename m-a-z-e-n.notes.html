@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notes | M-A-Z-E-N S_E_R_A_G</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230b0c10'/><path d='M25 75V25L50 50L75 25V75' stroke='%23ffffff' stroke-width='10' stroke-linecap='round' stroke-linejoin='round' fill='none'/><circle cx='50' cy='50' r='5' fill='%2360a5fa'/></svg>">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #0b0c10;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        .glow-text {
+            font-family: 'Space Grotesk', sans-serif;
+            letter-spacing: 0.25em;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.4),
+                         0 0 20px rgba(255, 255, 255, 0.2);
+        }
+
+        .ambient-glow {
+            position: fixed;
+            width: 450px;
+            height: 450px;
+            background: radial-gradient(circle, rgba(245, 158, 11, 0.05) 0%, rgba(0, 0, 0, 0) 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .note-card {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(8px);
+            transition: all 0.3s ease;
+        }
+
+        .note-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(245, 158, 11, 0.4);
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.8),
+                        0 0 15px 1px rgba(245, 158, 11, 0.15);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between p-4 sm:p-8 relative">
+
+    <!-- Ambient Background Light -->
+    <div class="ambient-glow"></div>
+
+    <!-- Top Navigation Header -->
+    <header class="w-full max-w-5xl mx-auto flex justify-between items-center z-10 py-4 border-b border-slate-800/80 mb-8">
+        <a href="m-a-z-e-n.dashboard.html" class="inline-flex items-center gap-2 text-slate-400 hover:text-white transition-colors text-sm font-semibold tracking-wider">
+            <i class="fa-solid fa-arrow-left"></i> BACK TO DASHBOARD
+        </a>
+        <span class="text-xs font-mono text-slate-500 tracking-widest uppercase">Mazen's Workspace</span>
+    </header>
+
+    <!-- Main Content -->
+    <main class="w-full max-w-5xl mx-auto flex-grow z-10 space-y-8">
+        
+        <!-- Header & Action Row -->
+        <div class="flex flex-col sm:flex-row justify-between items-center gap-4 border-b border-slate-800/50 pb-6">
+            <div>
+                <h1 class="glow-text text-3xl sm:text-4xl font-extrabold uppercase text-slate-100">
+                    NOTES
+                </h1>
+                <p class="text-slate-400 text-sm font-mono mt-1">WORKSPACE & QUICK LOGS</p>
+            </div>
+            
+            <!-- + Plus Button to Create Note -->
+            <button id="open-modal-btn" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-sm tracking-widest uppercase flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 hover:scale-105 active:scale-95 transition-all">
+                <i class="fa-solid fa-plus text-base"></i> New Note
+            </button>
+        </div>
+
+        <!-- Notes Grid Display -->
+        <div id="notes-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Dynamic notes will be rendered here via JavaScript -->
+        </div>
+
+        <!-- Empty State Message -->
+        <div id="empty-state" class="hidden text-center py-16 space-y-3">
+            <div class="w-16 h-16 rounded-2xl bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center justify-center text-2xl mx-auto">
+                <i class="fa-solid fa-book-open"></i>
+            </div>
+            <p class="text-slate-400 text-sm font-mono">No notes found yet. Click "+ New Note" to create one!</p>
+        </div>
+
+    </main>
+
+    <!-- Modal for Adding / Editing Notes -->
+    <div id="note-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-700/80 rounded-2xl w-full max-w-lg p-6 space-y-5 shadow-2xl relative">
+            
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                <h2 id="modal-title" class="text-lg font-bold text-white tracking-wide">Create New Note</h2>
+                <button id="close-modal-btn" class="text-slate-400 hover:text-white text-xl">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Note Form -->
+            <form id="note-form" class="space-y-4">
+                <input type="hidden" id="note-id" value="">
+                
+                <div>
+                    <label class="block text-xs font-mono text-slate-400 uppercase tracking-widest mb-1">Title</label>
+                    <input 
+                        type="text" 
+                        id="note-title-input" 
+                        required 
+                        placeholder="Enter note title..." 
+                        class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-amber-500 text-sm transition-colors"
+                    />
+                </div>
+
+                <div>
+                    <label class="block text-xs font-mono text-slate-400 uppercase tracking-widest mb-1">Content</label>
+                    <textarea 
+                        id="note-body-input" 
+                        rows="5" 
+                        required 
+                        placeholder="Type your note content here..." 
+                        class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-amber-500 text-sm transition-colors resize-none"
+                    ></textarea>
+                </div>
+
+                <div class="flex justify-end gap-3 pt-2">
+                    <button 
+                        type="button" 
+                        id="cancel-modal-btn" 
+                        class="px-5 py-2.5 rounded-xl border border-slate-700 text-slate-300 text-xs font-bold uppercase tracking-wider hover:bg-slate-800 transition-colors"
+                    >
+                        Cancel
+                    </button>
+                    <button 
+                        type="submit" 
+                        class="px-6 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold uppercase tracking-wider transition-colors shadow-md shadow-amber-500/20"
+                    >
+                        Save Note
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Aesthetic Footer -->
+    <footer class="w-full max-w-5xl mx-auto text-center z-10 py-6 border-t border-slate-800/80 mt-8">
+        <span class="text-slate-500 text-xs tracking-widest font-mono">MAZEN'S STUDIO &copy; NOTES</span>
+    </footer>
+
+    <!-- LocalStorage JavaScript Logic -->
+    <script>
+        const STORAGE_KEY = 'mazen_studio_notes';
+        
+        const openModalBtn = document.getElementById('open-modal-btn');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        const cancelModalBtn = document.getElementById('cancel-modal-btn');
+        const noteModal = document.getElementById('note-modal');
+        const noteForm = document.getElementById('note-form');
+        const noteIdInput = document.getElementById('note-id');
+        const noteTitleInput = document.getElementById('note-title-input');
+        const noteBodyInput = document.getElementById('note-body-input');
+        const modalTitle = document.getElementById('modal-title');
+        const notesGrid = document.getElementById('notes-grid');
+        const emptyState = document.getElementById('empty-state');
+
+        // Fetch notes from localStorage
+        function getNotes() {
+            const notes = localStorage.getItem(STORAGE_KEY);
+            return notes ? JSON.parse(notes) : [];
+        }
+
+        // Save notes array to localStorage
+        function saveNotes(notes) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
+        }
+
+        // Render notes to screen
+        function renderNotes() {
+            const notes = getNotes();
+            notesGrid.innerHTML = '';
+
+            if (notes.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            notes.forEach(note => {
+                const card = document.createElement('div');
+                card.className = 'note-card rounded-2xl p-5 flex flex-col justify-between group cursor-pointer relative';
+                card.innerHTML = `
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-start gap-2">
+                            <h3 class="font-bold text-lg text-white group-hover:text-amber-300 transition-colors line-clamp-1">${escapeHtml(note.title)}</h3>
+                            <button onclick="deleteNote(event, '${note.id}')" class="text-slate-500 hover:text-rose-400 p-1 transition-colors" title="Delete Note">
+                                <i class="fa-solid fa-trash-can text-sm"></i>
+                            </button>
+                        </div>
+                        <p class="text-slate-400 text-sm line-clamp-4 whitespace-pre-wrap">${escapeHtml(note.body)}</p>
+                    </div>
+                    <div class="pt-4 mt-4 border-t border-slate-800/60 flex justify-between items-center text-xs text-slate-500 font-mono">
+                        <span>${note.date}</span>
+                        <span class="text-amber-400/80 opacity-0 group-hover:opacity-100 transition-opacity">Click to edit <i class="fa-solid fa-pen text-[10px]"></i></span>
+                    </div>
+                `;
+
+                // Click card to edit note
+                card.addEventListener('click', (e) => {
+                    if (!e.target.closest('button')) {
+                        openModalForEdit(note);
+                    }
+                });
+
+                notesGrid.appendChild(card);
+            });
+        }
+
+        // Escape HTML to prevent XSS
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Modal triggers
+        function openModal() {
+            noteIdInput.value = '';
+            noteTitleInput.value = '';
+            noteBodyInput.value = '';
+            modalTitle.textContent = 'Create New Note';
+            noteModal.classList.remove('hidden');
+            noteTitleInput.focus();
+        }
+
+        function openModalForEdit(note) {
+            noteIdInput.value = note.id;
+            noteTitleInput.value = note.title;
+            noteBodyInput.value = note.body;
+            modalTitle.textContent = 'Edit Note';
+            noteModal.classList.remove('hidden');
+            noteTitleInput.focus();
+        }
+
+        function closeModal() {
+            noteModal.classList.add('hidden');
+        }
+
+        // Add or Update Note
+        noteForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const id = noteIdInput.value;
+            const title = noteTitleInput.value.trim();
+            const body = noteBodyInput.value.trim();
+
+            if (!title || !body) return;
+
+            let notes = getNotes();
+            const dateStr = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+            if (id) {
+                // Edit existing
+                notes = notes.map(n => n.id === id ? { ...n, title, body, date: dateStr } : n);
+            } else {
+                // Create new
+                const newNote = {
+                    id: Date.now().toString(),
+                    title,
+                    body,
+                    date: dateStr
+                };
+                notes.unshift(newNote);
+            }
+
+            saveNotes(notes);
+            renderNotes();
+            closeModal();
+        });
+
+        // Delete Note
+        window.deleteNote = function(event, id) {
+            event.stopPropagation();
+            if (confirm('Are you sure you want to delete this note?')) {
+                let notes = getNotes();
+                notes = notes.filter(n => n.id !== id);
+                saveNotes(notes);
+                renderNotes();
+            }
+        };
+
+        // Event Listeners
+        openModalBtn.addEventListener('click', openModal);
+        closeModalBtn.addEventListener('click', closeModal);
+        cancelModalBtn.addEventListener('click', closeModal);
+        
+        // Close modal on background click
+        noteModal.addEventListener('click', (e) => {
+            if (e.target === noteModal) closeModal();
+        });
+
+        // Initial Load
+        renderNotes();
+    </script>
+
+    <script>
+    // Apply saved ambient accent glow color on page load
+    const savedColor = localStorage.getItem('mazen_theme_color') || 'purple';
+    const glowColors = {
+        purple: 'rgba(168, 85, 247, 0.08)',
+        blue: 'rgba(59, 130, 246, 0.08)',
+        emerald: 'rgba(16, 185, 129, 0.08)',
+        amber: 'rgba(245, 158, 11, 0.08)',
+        rose: 'rgba(244, 63, 94, 0.08)'
+    };
+    
+    const glowElement = document.querySelector('.ambient-glow') || document.getElementById('ambient-glow');
+    if (glowElement && glowColors[savedColor]) {
+        glowElement.style.background = `radial-gradient(circle, ${glowColors[savedColor]} 0%, rgba(0, 0, 0, 0) 70%)`;
+    }
+
+    // Apply glow enabled/disabled state
+    const glowState = localStorage.getItem('mazen_glow_enabled') !== 'false';
+    if (glowElement && !glowState) {
+        glowElement.style.opacity = '0';
+    }
+</script>
+
+
+</body>
+</html>

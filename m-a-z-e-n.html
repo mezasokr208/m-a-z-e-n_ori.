@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M-A-Z-E-N S_E_R_A_G</title>
+     <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230b0c10'/><path d='M25 75V25L50 50L75 25V75' stroke='%23ffffff' stroke-width='10' stroke-linecap='round' stroke-linejoin='round' fill='none'/><circle cx='50' cy='50' r='5' fill='%2360a5fa'/></svg>">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #0b0c10;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        /* Glowing text effect */
+        .glow-text {
+            font-family: 'Space Grotesk', sans-serif;
+            letter-spacing: 0.25em;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.4),
+                         0 0 20px rgba(255, 255, 255, 0.2),
+                         0 0 30px rgba(255, 255, 255, 0.1);
+        }
+
+        /* Ambient background glow */
+        .ambient-glow {
+            position: absolute;
+            width: 320px;
+            height: 320px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, rgba(0, 0, 0, 0) 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* Smooth image container hover card effect */
+        .card-container {
+            position: relative;
+            z-index: 1;
+            transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), box-shadow 0.4s ease;
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.8),
+                        0 0 20px 2px rgba(255, 255, 255, 0.05);
+        }
+
+        .card-container:hover {
+            transform: translateY(-5px) scale(1.01);
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.9),
+                        0 0 30px 5px rgba(255, 255, 255, 0.12);
+        }
+
+        /* Subtle animated spotlight background */
+        @keyframes subtlePulse {
+            0%, 100% { opacity: 0.4; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 0.7; transform: translate(-50%, -50%) scale(1.15); }
+        }
+        .pulse-bg {
+            animation: subtlePulse 8s infinite ease-in-out;
+        }
+
+        /* Glowing button hover effect */
+        .btn-glow {
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+        }
+        .btn-glow:hover {
+            box-shadow: 0 0 25px rgba(255, 255, 255, 0.3),
+                        0 0 40px rgba(255, 255, 255, 0.15);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-center items-center p-4 sm:p-6 relative">
+
+    <!-- Subtle Ambient Background Light -->
+    <div class="ambient-glow pulse-bg"></div>
+
+    <!-- Main Content Wrapper -->
+    <main class="w-full max-w-lg flex flex-col items-center text-center space-y-8 z-10 my-auto">
+        
+        <!-- Top Title / Name Header -->
+        <header class="w-full">
+            <h1 class="glow-text text-2xl sm:text-3xl md:text-4xl font-extrabold uppercase tracking-widest text-slate-100">
+                M-A-Z-E-N S_E_R_A_G
+            </h1>
+            <div class="h-0.5 w-16 bg-gradient-to-r from-transparent via-slate-400 to-transparent mx-auto mt-4 opacity-50"></div>
+        </header>
+
+        <!-- Image Container -->
+        <div class="card-container rounded-2xl overflow-hidden border border-slate-800 bg-slate-900/60 p-2 sm:p-3 w-full max-w-sm sm:max-w-md">
+            <div class="relative rounded-xl overflow-hidden aspect-square bg-slate-950 flex items-center justify-center">
+                <img 
+                    src="1000103083.jpg" 
+                    alt="M-A-Z-E-N S_E_R_A_G" 
+                    class="w-full h-full object-cover transition-transform duration-700 ease-out hover:scale-105"
+                    onerror="this.onerror=null; this.src='https://placehold.co/600x600/111827/FFFFFF?text=MAZEN+SERAG';"
+                />
+            </div>
+        </div>
+
+        <!-- Dashboard Navigation Button -->
+        <div class="pt-2">
+            <a href="m-a-z-e-n.dashboard.html" class="btn-glow inline-block px-8 py-3 rounded-full bg-slate-100 text-slate-950 font-bold text-sm tracking-widest uppercase hover:bg-white hover:scale-105 active:scale-95 transition-all duration-300">
+                Go to Dashboard
+            </a>
+        </div>
+
+        <!-- Subtle Subtitle / Aesthetic Footer Bar -->
+        <footer class="pt-2 text-slate-500 text-xs sm:text-sm tracking-widest font-mono">
+            <span>MAZEN'S STUDIO</span>
+        </footer>
+
+    </main>
+
+
+    <script>
+    // Apply saved ambient accent glow color on page load
+    const savedColor = localStorage.getItem('mazen_theme_color') || 'purple';
+    const glowColors = {
+        purple: 'rgba(168, 85, 247, 0.08)',
+        blue: 'rgba(59, 130, 246, 0.08)',
+        emerald: 'rgba(16, 185, 129, 0.08)',
+        amber: 'rgba(245, 158, 11, 0.08)',
+        rose: 'rgba(244, 63, 94, 0.08)'
+    };
+    
+    const glowElement = document.querySelector('.ambient-glow') || document.getElementById('ambient-glow');
+    if (glowElement && glowColors[savedColor]) {
+        glowElement.style.background = `radial-gradient(circle, ${glowColors[savedColor]} 0%, rgba(0, 0, 0, 0) 70%)`;
+    }
+
+    // Apply glow enabled/disabled state
+    const glowState = localStorage.getItem('mazen_glow_enabled') !== 'false';
+    if (glowElement && !glowState) {
+        glowElement.style.opacity = '0';
+    }
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projects | M-A-Z-E-N S_E_R_A_G</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230b0c10'/><path d='M25 75V25L50 50L75 25V75' stroke='%23ffffff' stroke-width='10' stroke-linecap='round' stroke-linejoin='round' fill='none'/><circle cx='50' cy='50' r='5' fill='%2360a5fa'/></svg>">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #0b0c10;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        .glow-text {
+            font-family: 'Space Grotesk', sans-serif;
+            letter-spacing: 0.25em;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.4),
+                         0 0 20px rgba(255, 255, 255, 0.2);
+        }
+
+        .ambient-glow {
+            position: fixed;
+            width: 450px;
+            height: 450px;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.05) 0%, rgba(0, 0, 0, 0) 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .project-card {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(8px);
+            transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+
+        .project-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(16, 185, 129, 0.4);
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.8),
+                        0 0 15px 1px rgba(16, 185, 129, 0.15);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between p-4 sm:p-8 relative">
+
+    <!-- Ambient Background Light -->
+    <div class="ambient-glow"></div>
+
+    <!-- Top Navigation Header -->
+    <header class="w-full max-w-5xl mx-auto flex justify-between items-center z-10 py-4 border-b border-slate-800/80 mb-8">
+        <a href="m-a-z-e-n.dashboard.html" class="inline-flex items-center gap-2 text-slate-400 hover:text-white transition-colors text-sm font-semibold tracking-wider">
+            <i class="fa-solid fa-arrow-left"></i> BACK TO DASHBOARD
+        </a>
+        <span class="text-xs font-mono text-slate-500 tracking-widest uppercase">Mazen's Showcase</span>
+    </header>
+
+    <!-- Main Content -->
+    <main class="w-full max-w-5xl mx-auto flex-grow z-10 space-y-8">
+        
+        <!-- Header & Action Row -->
+        <div class="flex flex-col sm:flex-row justify-between items-center gap-4 border-b border-slate-800/50 pb-6">
+            <div>
+                <h1 class="glow-text text-3xl sm:text-4xl font-extrabold uppercase text-slate-100">
+                    PROJECTS
+                </h1>
+                <p class="text-slate-400 text-sm font-mono mt-1">WEBSITE PORTFOLIO & LABS</p>
+            </div>
+            
+            <!-- + Plus Button to Add Website Project -->
+            <button id="open-modal-btn" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-sm tracking-widest uppercase flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 hover:scale-105 active:scale-95 transition-all">
+                <i class="fa-solid fa-plus text-base"></i> New Project
+            </button>
+        </div>
+
+        <!-- Projects Grid Display -->
+        <div id="projects-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Dynamic projects will be rendered here via JavaScript -->
+        </div>
+
+        <!-- Empty State Message -->
+        <div id="empty-state" class="hidden text-center py-16 space-y-3">
+            <div class="w-16 h-16 rounded-2xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center justify-center text-2xl mx-auto">
+                <i class="fa-solid fa-globe"></i>
+            </div>
+            <p class="text-slate-400 text-sm font-mono">No website projects added yet. Click "+ New Project" to add one!</p>
+        </div>
+
+    </main>
+
+    <!-- Modal for Adding / Editing Website Projects -->
+    <div id="project-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-700/80 rounded-2xl w-full max-w-lg p-6 space-y-5 shadow-2xl relative">
+            
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                <h2 id="modal-title" class="text-lg font-bold text-white tracking-wide">Add Website Project</h2>
+                <button id="close-modal-btn" class="text-slate-400 hover:text-white text-xl">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Project Form -->
+            <form id="project-form" class="space-y-4">
+                <input type="hidden" id="project-id" value="">
+                
+                <div>
+                    <label class="block text-xs font-mono text-slate-400 uppercase tracking-widest mb-1">Project Title</label>
+                    <input 
+                        type="text" 
+                        id="project-title-input" 
+                        required 
+                        placeholder="e.g. Portfolio Website" 
+                        class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500 text-sm transition-colors"
+                    />
+                </div>
+
+                <div>
+                    <label class="block text-xs font-mono text-slate-400 uppercase tracking-widest mb-1">Website URL</label>
+                    <input 
+                        type="url" 
+                        id="project-url-input" 
+                        required 
+                        placeholder="https://example.com" 
+                        class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500 text-sm transition-colors"
+                    />
+                </div>
+
+                <div>
+                    <label class="block text-xs font-mono text-slate-400 uppercase tracking-widest mb-1">Description</label>
+                    <textarea 
+                        id="project-desc-input" 
+                        rows="3" 
+                        required 
+                        placeholder="Short description of the website..." 
+                        class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500 text-sm transition-colors resize-none"
+                    ></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-mono text-slate-400 uppercase tracking-widest mb-1">Tags / Tech (Comma separated)</label>
+                    <input 
+                        type="text" 
+                        id="project-tags-input" 
+                        placeholder="HTML, Tailwind, JS" 
+                        class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500 text-sm transition-colors"
+                    />
+                </div>
+
+                <div class="flex justify-end gap-3 pt-2">
+                    <button 
+                        type="button" 
+                        id="cancel-modal-btn" 
+                        class="px-5 py-2.5 rounded-xl border border-slate-700 text-slate-300 text-xs font-bold uppercase tracking-wider hover:bg-slate-800 transition-colors"
+                    >
+                        Cancel
+                    </button>
+                    <button 
+                        type="submit" 
+                        class="px-6 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold uppercase tracking-wider transition-colors shadow-md shadow-emerald-500/20"
+                    >
+                        Save Project
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Aesthetic Footer -->
+    <footer class="w-full max-w-5xl mx-auto text-center z-10 py-6 border-t border-slate-800/80 mt-8">
+        <span class="text-slate-500 text-xs tracking-widest font-mono">MAZEN'S STUDIO &copy; PROJECTS</span>
+    </footer>
+
+    <!-- LocalStorage JavaScript Logic -->
+    <script>
+        const STORAGE_KEY = 'mazen_studio_projects';
+        
+        const openModalBtn = document.getElementById('open-modal-btn');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        const cancelModalBtn = document.getElementById('cancel-modal-btn');
+        const projectModal = document.getElementById('project-modal');
+        const projectForm = document.getElementById('project-form');
+        const projectIdInput = document.getElementById('project-id');
+        const projectTitleInput = document.getElementById('project-title-input');
+        const projectUrlInput = document.getElementById('project-url-input');
+        const projectDescInput = document.getElementById('project-desc-input');
+        const projectTagsInput = document.getElementById('project-tags-input');
+        const modalTitle = document.getElementById('modal-title');
+        const projectsGrid = document.getElementById('projects-grid');
+        const emptyState = document.getElementById('empty-state');
+
+        // Fetch projects from localStorage
+        function getProjects() {
+            const projects = localStorage.getItem(STORAGE_KEY);
+            return projects ? JSON.parse(projects) : [];
+        }
+
+        // Save projects to localStorage
+        function saveProjects(projects) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
+        }
+
+        // Render projects to screen
+        function renderProjects() {
+            const projects = getProjects();
+            projectsGrid.innerHTML = '';
+
+            if (projects.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            projects.forEach(project => {
+                const card = document.createElement('div');
+                card.className = 'project-card rounded-2xl p-5 flex flex-col justify-between group relative';
+                
+                const tagsHTML = project.tags ? project.tags.split(',').map(tag => 
+                    `<span class="text-[10px] font-mono px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">${escapeHtml(tag.trim())}</span>`
+                ).join(' ') : '';
+
+                card.innerHTML = `
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-start gap-2">
+                            <div class="flex items-center gap-2">
+                                <i class="fa-solid fa-globe text-emerald-400"></i>
+                                <h3 class="font-bold text-lg text-white group-hover:text-emerald-300 transition-colors line-clamp-1">${escapeHtml(project.title)}</h3>
+                            </div>
+                            <div class="flex items-center gap-1">
+                                <button onclick="editProject('${project.id}')" class="text-slate-500 hover:text-amber-400 p-1 transition-colors" title="Edit Project">
+                                    <i class="fa-solid fa-pen-to-square text-sm"></i>
+                                </button>
+                                <button onclick="deleteProject(event, '${project.id}')" class="text-slate-500 hover:text-rose-400 p-1 transition-colors" title="Delete Project">
+                                    <i class="fa-solid fa-trash-can text-sm"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <p class="text-slate-400 text-sm line-clamp-3">${escapeHtml(project.desc)}</p>
+                        <div class="flex flex-wrap gap-1 pt-1">${tagsHTML}</div>
+                    </div>
+                    <div class="pt-4 mt-4 border-t border-slate-800/60 flex justify-between items-center">
+                        <span class="text-xs text-slate-500 font-mono">${project.date}</span>
+                        <a href="${escapeHtml(project.url)}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-400 hover:text-emerald-300 transition-colors uppercase tracking-wider">
+                            Visit Site <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                        </a>
+                    </div>
+                `;
+
+                projectsGrid.appendChild(card);
+            });
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Modal functions
+        function openModal() {
+            projectIdInput.value = '';
+            projectTitleInput.value = '';
+            projectUrlInput.value = '';
+            projectDescInput.value = '';
+            projectTagsInput.value = '';
+            modalTitle.textContent = 'Add Website Project';
+            projectModal.classList.remove('hidden');
+            projectTitleInput.focus();
+        }
+
+        window.editProject = function(id) {
+            const projects = getProjects();
+            const project = projects.find(p => p.id === id);
+            if (!project) return;
+
+            projectIdInput.value = project.id;
+            projectTitleInput.value = project.title;
+            projectUrlInput.value = project.url;
+            projectDescInput.value = project.desc;
+            projectTagsInput.value = project.tags || '';
+            modalTitle.textContent = 'Edit Website Project';
+            projectModal.classList.remove('hidden');
+            projectTitleInput.focus();
+        };
+
+        function closeModal() {
+            projectModal.classList.add('hidden');
+        }
+
+        // Form Submission
+        projectForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const id = projectIdInput.value;
+            const title = projectTitleInput.value.trim();
+            let url = projectUrlInput.value.trim();
+            const desc = projectDescInput.value.trim();
+            const tags = projectTagsInput.value.trim();
+
+            if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                url = 'https://' + url;
+            }
+
+            let projects = getProjects();
+            const dateStr = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+            if (id) {
+                projects = projects.map(p => p.id === id ? { ...p, title, url, desc, tags, date: dateStr } : p);
+            } else {
+                const newProject = {
+                    id: Date.now().toString(),
+                    title,
+                    url,
+                    desc,
+                    tags,
+                    date: dateStr
+                };
+                projects.unshift(newProject);
+            }
+
+            saveProjects(projects);
+            renderProjects();
+            closeModal();
+        });
+
+        // Delete Project
+        window.deleteProject = function(event, id) {
+            event.stopPropagation();
+            if (confirm('Are you sure you want to delete this website project?')) {
+                let projects = getProjects();
+                projects = projects.filter(p => p.id !== id);
+                saveProjects(projects);
+                renderProjects();
+            }
+        };
+
+        // Listeners
+        openModalBtn.addEventListener('click', openModal);
+        closeModalBtn.addEventListener('click', closeModal);
+        cancelModalBtn.addEventListener('click', closeModal);
+        
+        projectModal.addEventListener('click', (e) => {
+            if (e.target === projectModal) closeModal();
+        });
+
+        // Initial Load
+        renderProjects();
+    </script>
+
+    <script>
+    // Apply saved ambient accent glow color on page load
+    const savedColor = localStorage.getItem('mazen_theme_color') || 'purple';
+    const glowColors = {
+        purple: 'rgba(168, 85, 247, 0.08)',
+        blue: 'rgba(59, 130, 246, 0.08)',
+        emerald: 'rgba(16, 185, 129, 0.08)',
+        amber: 'rgba(245, 158, 11, 0.08)',
+        rose: 'rgba(244, 63, 94, 0.08)'
+    };
+    
+    const glowElement = document.querySelector('.ambient-glow') || document.getElementById('ambient-glow');
+    if (glowElement && glowColors[savedColor]) {
+        glowElement.style.background = `radial-gradient(circle, ${glowColors[savedColor]} 0%, rgba(0, 0, 0, 0) 70%)`;
+    }
+
+    // Apply glow enabled/disabled state
+    const glowState = localStorage.getItem('mazen_glow_enabled') !== 'false';
+    if (glowElement && !glowState) {
+        glowElement.style.opacity = '0';
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Media Vault | M-A-Z-E-N S_E_R_A_G</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230b0c10'/><path d='M25 75V25L50 50L75 25V75' stroke='%23ffffff' stroke-width='10' stroke-linecap='round' stroke-linejoin='round' fill='none'/><circle cx='50' cy='50' r='5' fill='%2360a5fa'/></svg>">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #0b0c10;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        .glow-text {
+            font-family: 'Space Grotesk', sans-serif;
+            letter-spacing: 0.25em;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.4),
+                         0 0 20px rgba(255, 255, 255, 0.2);
+        }
+
+        .ambient-glow {
+            position: fixed;
+            width: 450px;
+            height: 450px;
+            background: radial-gradient(circle, rgba(244, 63, 94, 0.05) 0%, rgba(0, 0, 0, 0) 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .media-card {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(8px);
+            transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+
+        .media-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(244, 63, 94, 0.4);
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.8),
+                        0 0 15px 1px rgba(244, 63, 94, 0.15);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between p-4 sm:p-8 relative">
+
+    <!-- Ambient Background Light -->
+    <div class="ambient-glow"></div>
+
+    <!-- Top Navigation Header -->
+    <header class="w-full max-w-5xl mx-auto flex justify-between items-center z-10 py-4 border-b border-slate-800/80 mb-8">
+        <a href="m-a-z-e-n.dashboard.html" class="inline-flex items-center gap-2 text-slate-400 hover:text-white transition-colors text-sm font-semibold tracking-wider">
+            <i class="fa-solid fa-arrow-left"></i> BACK TO DASHBOARD
+        </a>
+        <span class="text-xs font-mono text-slate-500 tracking-widest uppercase">Mazen's Gallery</span>
+    </header>
+
+    <!-- Main Content -->
+    <main class="w-full max-w-5xl mx-auto flex-grow z-10 space-y-8">
+        
+        <!-- Header & Action Row -->
+        <div class="flex flex-col sm:flex-row justify-between items-center gap-4 border-b border-slate-800/50 pb-6">
+            <div>
+                <h1 class="glow-text text-3xl sm:text-4xl font-extrabold uppercase text-slate-100">
+                    MEDIA VAULT
+                </h1>
+                <p class="text-slate-400 text-sm font-mono mt-1">PHOTO ARCHIVES & ARTWORK</p>
+            </div>
+            
+            <!-- + Plus Button to Add Media -->
+            <button id="open-modal-btn" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-rose-500 hover:bg-rose-400 text-slate-950 font-bold text-sm tracking-widest uppercase flex items-center justify-center gap-2 shadow-lg shadow-rose-500/20 hover:scale-105 active:scale-95 transition-all">
+                <i class="fa-solid fa-plus text-base"></i> Add Media
+            </button>
+        </div>
+
+        <!-- Media Grid Display -->
+        <div id="media-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Dynamic media cards rendered via JavaScript -->
+        </div>
+
+        <!-- Empty State Message -->
+        <div id="empty-state" class="hidden text-center py-16 space-y-3">
+            <div class="w-16 h-16 rounded-2xl bg-rose-500/10 text-rose-400 border border-rose-500/20 flex items-center justify-center text-2xl mx-auto">
+                <i class="fa-solid fa-photo-film"></i>
+            </div>
+            <p class="text-slate-400 text-sm font-mono">No media items in vault yet. Click "+ Add Media" to upload!</p>
+        </div>
+
+    </main>
+
+    <!-- Modal for Adding Media -->
+    <div id="media-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-700/80 rounded-2xl w-full max-w-lg p-6 space-y-5 shadow-2xl relative">
+            
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                <h2 class="text-lg font-bold text-white tracking-wide">Add Media Item</h2>
+                <button id="close-modal-btn" class="text-slate-400 hover:text-white text-xl">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Media Form -->
+            <form id="media-form" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-mono text-slate-400 uppercase tracking-widest mb-1">Title / Caption</label>
+                    <input 
+                        type="text" 
+                        id="media-title-input" 
+                        required 
+                        placeholder="e.g. Studio Session #1" 
+                        class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-rose-500 text-sm transition-colors"
+                    />
+                </div>
+
+                <div>
+                    <label class="block text-xs font-mono text-slate-400 uppercase tracking-widest mb-1">Image URL / File Path</label>
+                    <input 
+                        type="text" 
+                        id="media-url-input" 
+                        required 
+                        placeholder="1000103083.jpg or https://..." 
+                        class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-rose-500 text-sm transition-colors"
+                    />
+                </div>
+
+                <div>
+                    <label class="block text-xs font-mono text-slate-400 uppercase tracking-widest mb-1">Category / Tag</label>
+                    <input 
+                        type="text" 
+                        id="media-tag-input" 
+                        placeholder="Studio, Photography, Artwork" 
+                        class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-rose-500 text-sm transition-colors"
+                    />
+                </div>
+
+                <div class="flex justify-end gap-3 pt-2">
+                    <button 
+                        type="button" 
+                        id="cancel-modal-btn" 
+                        class="px-5 py-2.5 rounded-xl border border-slate-700 text-slate-300 text-xs font-bold uppercase tracking-wider hover:bg-slate-800 transition-colors"
+                    >
+                        Cancel
+                    </button>
+                    <button 
+                        type="submit" 
+                        class="px-6 py-2.5 rounded-xl bg-rose-500 hover:bg-rose-400 text-slate-950 text-xs font-bold uppercase tracking-wider transition-colors shadow-md shadow-rose-500/20"
+                    >
+                        Upload Item
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Lightbox Modal for Full View -->
+    <div id="lightbox-modal" class="fixed inset-0 bg-black/90 backdrop-blur-lg z-50 hidden flex flex-col items-center justify-center p-4">
+        <button onclick="closeLightbox()" class="absolute top-6 right-6 text-slate-400 hover:text-white text-2xl p-2 z-10">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+        <div class="max-w-4xl max-h-[80vh] flex flex-col items-center space-y-4">
+            <img id="lightbox-img" src="" alt="" class="max-w-full max-h-[70vh] object-contain rounded-xl border border-slate-800 shadow-2xl">
+            <h3 id="lightbox-title" class="text-white font-bold text-lg tracking-wide"></h3>
+        </div>
+    </div>
+
+    <!-- Aesthetic Footer -->
+    <footer class="w-full max-w-5xl mx-auto text-center z-10 py-6 border-t border-slate-800/80 mt-8">
+        <span class="text-slate-500 text-xs tracking-widest font-mono">MAZEN'S STUDIO &copy; MEDIA VAULT</span>
+    </footer>
+
+    <!-- LocalStorage JavaScript Logic -->
+    <script>
+        const STORAGE_KEY = 'mazen_studio_media';
+        
+        const openModalBtn = document.getElementById('open-modal-btn');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        const cancelModalBtn = document.getElementById('cancel-modal-btn');
+        const mediaModal = document.getElementById('media-modal');
+        const mediaForm = document.getElementById('media-form');
+        const mediaTitleInput = document.getElementById('media-title-input');
+        const mediaUrlInput = document.getElementById('media-url-input');
+        const mediaTagInput = document.getElementById('media-tag-input');
+        const mediaGrid = document.getElementById('media-grid');
+        const emptyState = document.getElementById('empty-state');
+        
+        const lightboxModal = document.getElementById('lightbox-modal');
+        const lightboxImg = document.getElementById('lightbox-img');
+        const lightboxTitle = document.getElementById('lightbox-title');
+
+        // Fetch media from localStorage
+        function getMedia() {
+            const media = localStorage.getItem(STORAGE_KEY);
+            return media ? JSON.parse(media) : [
+                { id: 'default1', title: 'M-A-Z-E-N S_E_R_A_G Cover', url: '1000103083.jpg', tag: 'Studio', date: 'Jan 2026' }
+            ];
+        }
+
+        function saveMedia(media) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(media));
+        }
+
+        function renderMedia() {
+            const mediaList = getMedia();
+            mediaGrid.innerHTML = '';
+
+            if (mediaList.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            mediaList.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'media-card rounded-2xl overflow-hidden flex flex-col justify-between group cursor-pointer';
+                
+                card.innerHTML = `
+                    <div class="relative aspect-square bg-slate-950 overflow-hidden flex items-center justify-center">
+                        <img 
+                            src="${escapeHtml(item.url)}" 
+                            alt="${escapeHtml(item.title)}" 
+                            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                            onerror="this.onerror=null; this.src='https://placehold.co/600x600/111827/FFFFFF?text=MAZEN+VAULT';"
+                        />
+                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+                            <span class="w-10 h-10 rounded-full bg-slate-900/80 text-white flex items-center justify-center text-sm shadow-lg">
+                                <i class="fa-solid fa-expand"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="p-4 space-y-2">
+                        <div class="flex justify-between items-start gap-2">
+                            <h3 class="font-bold text-white text-base line-clamp-1 group-hover:text-rose-300 transition-colors">${escapeHtml(item.title)}</h3>
+                            <button onclick="deleteMedia(event, '${item.id}')" class="text-slate-500 hover:text-rose-400 p-1 transition-colors" title="Delete Item">
+                                <i class="fa-solid fa-trash-can text-sm"></i>
+                            </button>
+                        </div>
+                        <div class="flex justify-between items-center text-xs text-slate-500 font-mono pt-1 border-t border-slate-800/60">
+                            <span class="text-rose-400/80">${escapeHtml(item.tag || 'Archive')}</span>
+                            <span>${item.date}</span>
+                        </div>
+                    </div>
+                `;
+
+                card.addEventListener('click', (e) => {
+                    if (!e.target.closest('button')) {
+                        openLightbox(item.url, item.title);
+                    }
+                });
+
+                mediaGrid.appendChild(card);
+            });
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function openModal() {
+            mediaTitleInput.value = '';
+            mediaUrlInput.value = '';
+            mediaTagInput.value = '';
+            mediaModal.classList.remove('hidden');
+            mediaTitleInput.focus();
+        }
+
+        function closeModal() {
+            mediaModal.classList.add('hidden');
+        }
+
+        function openLightbox(url, title) {
+            lightboxImg.src = url;
+            lightboxTitle.textContent = title;
+            lightboxModal.classList.remove('hidden');
+        }
+
+        window.closeLightbox = function() {
+            lightboxModal.classList.add('hidden');
+        }
+
+        mediaForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const title = mediaTitleInput.value.trim();
+            const url = mediaUrlInput.value.trim();
+            const tag = mediaTagInput.value.trim();
+            const dateStr = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+            if (!title || !url) return;
+
+            let mediaList = getMedia();
+            const newItem = {
+                id: Date.now().toString(),
+                title,
+                url,
+                tag,
+                date: dateStr
+            };
+
+            mediaList.unshift(newItem);
+            saveMedia(mediaList);
+            renderMedia();
+            closeModal();
+        });
+
+        window.deleteMedia = function(event, id) {
+            event.stopPropagation();
+            if (confirm('Are you sure you want to delete this media item?')) {
+                let mediaList = getMedia();
+                mediaList = mediaList.filter(item => item.id !== id);
+                saveMedia(mediaList);
+                renderMedia();
+            }
+        };
+
+        openModalBtn.addEventListener('click', openModal);
+        closeModalBtn.addEventListener('click', closeModal);
+        cancelModalBtn.addEventListener('click', closeModal);
+        
+        mediaModal.addEventListener('click', (e) => {
+            if (e.target === mediaModal) closeModal();
+        });
+
+        lightboxModal.addEventListener('click', (e) => {
+            if (e.target === lightboxModal) closeLightbox();
+        });
+
+        // Initial Load
+        renderMedia();
+    </script>
+
+        <script>
+    // Apply saved ambient accent glow color on page load
+    const savedColor = localStorage.getItem('mazen_theme_color') || 'purple';
+    const glowColors = {
+        purple: 'rgba(168, 85, 247, 0.08)',
+        blue: 'rgba(59, 130, 246, 0.08)',
+        emerald: 'rgba(16, 185, 129, 0.08)',
+        amber: 'rgba(245, 158, 11, 0.08)',
+        rose: 'rgba(244, 63, 94, 0.08)'
+    };
+    
+    const glowElement = document.querySelector('.ambient-glow') || document.getElementById('ambient-glow');
+    if (glowElement && glowColors[savedColor]) {
+        glowElement.style.background = `radial-gradient(circle, ${glowColors[savedColor]} 0%, rgba(0, 0, 0, 0) 70%)`;
+    }
+
+    // Apply glow enabled/disabled state
+    const glowState = localStorage.getItem('mazen_glow_enabled') !== 'false';
+    if (glowElement && !glowState) {
+        glowElement.style.opacity = '0';
+    }
+</script>
+
+
+
+</body>
+</html>
